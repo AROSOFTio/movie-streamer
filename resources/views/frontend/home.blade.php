@@ -4,37 +4,31 @@
     <section class="relative overflow-hidden rounded-3xl bg-black/80 p-8 md:p-12">
         @if ($featured)
             <div class="absolute inset-0">
-                <div class="absolute inset-0 bg-gradient-to-r from-black via-black/70 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent"></div>
                 @if ($featured->backdrop_url)
                     <img src="{{ $featured->backdrop_url }}" alt="{{ $featured->title }}" class="h-full w-full object-cover opacity-60">
                 @endif
             </div>
             <div class="relative z-10 max-w-xl space-y-4">
                 <span class="inline-flex items-center gap-2 rounded-full bg-brand/20 px-3 py-1 text-xs uppercase tracking-[0.3em] text-brand">
-                    Featured
+                    Featured Translation
                 </span>
                 <h1 class="text-4xl md:text-6xl">{{ $featured->title }}</h1>
                 <p class="text-sm text-slate-300">{{ $featured->description }}</p>
-                <div class="flex flex-wrap items-center gap-3 text-xs text-slate-400">
-                    <span>{{ $featured->year }}</span>
-                    <span>{{ $featured->age_rating }}</span>
-                    <span>{{ $featured->duration }} min</span>
-                    <span>{{ number_format($featured->rating, 1) }} ★</span>
-                </div>
-                <div class="flex gap-3">
-                    <a href="{{ route('movies.show', $featured->slug) }}" class="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-black hover:bg-brand-dark">
-                        View Details
-                    </a>
-                    <a href="{{ route('watch.movie', $featured->slug) }}" class="rounded-full border border-white/20 px-6 py-3 text-sm text-white hover:border-brand hover:text-brand">
+                <p class="text-xs uppercase tracking-[0.3em] text-brand">Free stream: 1 hour daily, even as a guest</p>
+                <div class="flex flex-wrap gap-3">
+                    <a href="{{ route('watch.movie', $featured->slug) }}" class="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-black hover:bg-brand-dark">
                         Watch Now
                     </a>
+                    <a href="{{ route('movies.show', $featured->slug) }}" class="rounded-full border border-white/20 px-6 py-3 text-sm text-white hover:border-brand hover:text-brand">
+                        View Details
+                    </a>
                 </div>
-                <p class="text-xs uppercase tracking-[0.3em] text-brand">Free 1 hour streaming daily</p>
             </div>
         @else
-            <div class="relative z-10 space-y-4">
-                <h1 class="text-4xl md:text-6xl">Cinematic stories, delivered.</h1>
-                <p class="text-sm text-slate-300">Browse curated collections and pick up right where you left off.</p>
+            <div class="relative z-10 max-w-xl space-y-4">
+                <h1 class="text-4xl md:text-6xl">Ateso and Luganda translated cinema.</h1>
+                <p class="text-sm text-slate-300">Stream for free up to 1 hour per day, then subscribe when you are ready.</p>
                 <a href="{{ route('browse') }}" class="rounded-full bg-brand px-6 py-3 text-sm font-semibold text-black hover:bg-brand-dark">
                     Start Browsing
                 </a>
@@ -42,39 +36,22 @@
         @endif
     </section>
 
-    <section class="mt-10 grid gap-4 md:grid-cols-3">
-        <a href="{{ route('browse') }}#movies" class="glass-panel card-hover rounded-2xl p-6">
-            <h2 class="text-2xl">Movies</h2>
-            <p class="mt-2 text-sm text-slate-400">Blockbusters and indie gems.</p>
-        </a>
-        <a href="{{ route('browse') }}#series" class="glass-panel card-hover rounded-2xl p-6">
-            <h2 class="text-2xl">Series</h2>
-            <p class="mt-2 text-sm text-slate-400">Binge-ready collections.</p>
-        </a>
-        <a href="{{ route('browse') }}#sop" class="glass-panel card-hover rounded-2xl p-6">
-            <h2 class="text-2xl">SOP</h2>
-            <p class="mt-2 text-sm text-slate-400">Short original programs.</p>
-        </a>
-    </section>
-
     @auth
-        @if ($continueWatching->count())
+        @if ($continueWatching->isNotEmpty())
             <section class="mt-10">
                 <div class="mb-4 flex items-center justify-between">
                     <h2 class="text-2xl">Continue Watching</h2>
-                    <span class="text-xs uppercase tracking-[0.3em] text-brand">Because you started</span>
+                    <span class="text-xs uppercase tracking-[0.3em] text-brand">Your progress</span>
                 </div>
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
                     @foreach ($continueWatching as $history)
                         @php
                             $item = $history->watchable;
+                            $thumb = $item?->backdrop_url ?? $item?->poster_url;
                         @endphp
                         @if ($item)
-                            <a class="card-hover glass-panel overflow-hidden rounded-2xl" href="{{ $item instanceof \App\Models\Movie ? route('movies.show', $item->slug) : route('watch.episode', $item->slug) }}">
+                            <a class="card-hover glass-panel overflow-hidden rounded-2xl" href="{{ $item instanceof \App\Models\Movie ? route('watch.movie', $item->slug) : route('watch.episode', $item->slug) }}">
                                 <div class="aspect-[16/9] bg-surface">
-                                    @php
-                                        $thumb = $item->backdrop_url ?? $item->poster_url;
-                                    @endphp
                                     @if ($thumb)
                                         <img src="{{ $thumb }}" alt="{{ $item->title }}" class="h-full w-full object-cover">
                                     @endif
@@ -94,140 +71,65 @@
         @endif
     @endauth
 
-    <section class="mt-10">
-        <div class="mb-4 flex items-center justify-between">
-            <h2 class="text-2xl">Trending Now</h2>
-            <a href="{{ route('browse') }}" class="text-sm text-brand hover:text-brand-dark">See all</a>
-        </div>
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-            @foreach ($trending as $movie)
-                <a class="card-hover glass-panel overflow-hidden rounded-2xl" href="{{ route('movies.show', $movie->slug) }}">
-                    <div class="aspect-[16/9] bg-surface">
-                        @php
-                            $thumb = $movie->backdrop_url ?? $movie->poster_url;
-                        @endphp
-                        @if ($thumb)
-                            <img src="{{ $thumb }}" alt="{{ $movie->title }}" class="h-full w-full object-cover">
-                        @endif
-                    </div>
-                    <div class="space-y-1 p-3">
-                        <h3 class="text-lg">{{ $movie->title }}</h3>
-                        <p class="text-xs text-slate-400">{{ $movie->year }} • {{ $movie->age_rating }}</p>
-                    </div>
-                </a>
-            @endforeach
-        </div>
-    </section>
-
-    @if ($languageTrending->count())
-        @foreach ($languageTrending as $language)
-            <section class="mt-10">
-                <div class="mb-4 flex items-center justify-between">
-                    <h2 class="text-2xl">Trending in {{ $language->name }}</h2>
-                    <a href="{{ route('browse', ['language' => $language->slug]) }}" class="text-sm text-brand hover:text-brand-dark">Explore</a>
-                </div>
-                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-                    @foreach ($language->movies as $movie)
-                        <a class="card-hover glass-panel overflow-hidden rounded-2xl" href="{{ route('movies.show', $movie->slug) }}">
-                            <div class="aspect-[16/9] bg-surface">
-                                @php
-                                    $thumb = $movie->backdrop_url ?? $movie->poster_url;
-                                @endphp
-                                @if ($thumb)
-                                    <img src="{{ $thumb }}" alt="{{ $movie->title }}" class="h-full w-full object-cover">
-                                @endif
-                            </div>
-                            <div class="space-y-1 p-3">
-                                <h3 class="text-lg">{{ $movie->title }}</h3>
-                                <p class="text-xs text-slate-400">{{ $movie->year }} - {{ $movie->age_rating }}</p>
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
-            </section>
-        @endforeach
-    @endif
-
-    @if ($series->count())
+    @if ($trending->isNotEmpty())
         <section class="mt-10">
             <div class="mb-4 flex items-center justify-between">
-                <h2 class="text-2xl">Series Spotlight</h2>
-                <span class="text-xs uppercase tracking-[0.3em] text-slate-500">Fresh seasons</span>
+                <h2 class="text-2xl">Trending</h2>
+                <a href="{{ route('browse') }}" class="text-sm text-brand hover:text-brand-dark">Browse all</a>
             </div>
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-                @foreach ($series as $show)
-                    <div class="card-hover glass-panel overflow-hidden rounded-2xl">
-                        <div class="aspect-[16/9] bg-surface">
-                            @php
-                                $thumb = $show->backdrop_url ?? $show->poster_url;
-                            @endphp
-                            @if ($thumb)
-                                <img src="{{ $thumb }}" alt="{{ $show->title }}" class="h-full w-full object-cover">
-                            @endif
-                        </div>
-                        <div class="space-y-1 p-3">
-                            <h3 class="text-lg">{{ $show->title }}</h3>
-                            <p class="text-xs text-slate-400">{{ $show->year }} • {{ $show->age_rating }}</p>
-                        </div>
-                    </div>
+                @foreach ($trending as $movie)
+                    @include('frontend.partials.movie-card', ['movie' => $movie, 'meta' => null])
                 @endforeach
             </div>
         </section>
     @endif
 
-    @if ($episodes->count())
+    @if ($mostStreamed->isNotEmpty())
         <section class="mt-10">
             <div class="mb-4 flex items-center justify-between">
-                <h2 class="text-2xl">SOP — Short Original Programs</h2>
-                <span class="text-xs uppercase tracking-[0.3em] text-brand">New drops</span>
+                <h2 class="text-2xl">Most Streamed</h2>
+                <span class="text-xs uppercase tracking-[0.3em] text-slate-500">Top watched today</span>
             </div>
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-                @foreach ($episodes as $episode)
-                    <a class="card-hover glass-panel overflow-hidden rounded-2xl" href="{{ route('watch.episode', $episode->slug) }}">
-                        <div class="aspect-[16/9] bg-surface">
-                            @php
-                                $thumb = $episode->backdrop_url ?? $episode->poster_url;
-                            @endphp
-                            @if ($thumb)
-                                <img src="{{ $thumb }}" alt="{{ $episode->title }}" class="h-full w-full object-cover">
-                            @endif
-                        </div>
-                        <div class="space-y-1 p-3">
-                            <h3 class="text-lg">{{ $episode->title }}</h3>
-                            <p class="text-xs text-slate-400">S{{ $episode->season_number }} • E{{ $episode->episode_number }}</p>
-                        </div>
-                    </a>
+                @foreach ($mostStreamed as $movie)
+                    @include('frontend.partials.movie-card', [
+                        'movie' => $movie,
+                        'meta' => (int) ($movie->stream_count ?? 0) > 0 ? number_format((int) $movie->stream_count).' streams' : null,
+                    ])
                 @endforeach
             </div>
         </section>
     @endif
 
-    @foreach ($genres as $genre)
-        @if ($genre->movies->count())
-            <section class="mt-10">
-                <div class="mb-4 flex items-center justify-between">
-                    <h2 class="text-2xl">{{ $genre->name }}</h2>
-                    <a href="{{ route('browse', ['genre' => $genre->slug]) }}" class="text-sm text-brand hover:text-brand-dark">Explore</a>
-                </div>
-                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-                    @foreach ($genre->movies as $movie)
-                        <a class="card-hover glass-panel overflow-hidden rounded-2xl" href="{{ route('movies.show', $movie->slug) }}">
-                            <div class="aspect-[16/9] bg-surface">
-                                @php
-                                    $thumb = $movie->backdrop_url ?? $movie->poster_url;
-                                @endphp
-                                @if ($thumb)
-                                    <img src="{{ $thumb }}" alt="{{ $movie->title }}" class="h-full w-full object-cover">
-                                @endif
-                            </div>
-                            <div class="space-y-1 p-3">
-                                <h3 class="text-lg">{{ $movie->title }}</h3>
-                                <p class="text-xs text-slate-400">{{ $movie->year }} • {{ $movie->age_rating }}</p>
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
-            </section>
-        @endif
+    @if ($mostDownloaded->isNotEmpty())
+        <section class="mt-10">
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="text-2xl">Most Downloaded</h2>
+                <span class="text-xs uppercase tracking-[0.3em] text-slate-500">Offline favorites</span>
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                @foreach ($mostDownloaded as $movie)
+                    @include('frontend.partials.movie-card', [
+                        'movie' => $movie,
+                        'meta' => (int) ($movie->download_count_total ?? 0) > 0 ? number_format((int) $movie->download_count_total).' downloads' : null,
+                    ])
+                @endforeach
+            </div>
+        </section>
+    @endif
+
+    @foreach ($languageRows as $language)
+        <section class="mt-10">
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="text-2xl">{{ $language->name }} Picks</h2>
+                <a href="{{ route('browse', ['language' => $language->slug]) }}" class="text-sm text-brand hover:text-brand-dark">Explore</a>
+            </div>
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+                @foreach ($language->movies as $movie)
+                    @include('frontend.partials.movie-card', ['movie' => $movie, 'meta' => null])
+                @endforeach
+            </div>
+        </section>
     @endforeach
 @endsection

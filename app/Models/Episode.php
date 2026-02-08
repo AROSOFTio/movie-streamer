@@ -83,6 +83,16 @@ class Episode extends Model
         return $this->resolveMediaUrl($this->backdrop_path);
     }
 
+    public function getLanguageLabelAttribute(): ?string
+    {
+        $relatedLanguage = $this->relationLoaded('language') ? $this->getRelation('language') : null;
+        if ($relatedLanguage instanceof Language) {
+            return $relatedLanguage->name;
+        }
+
+        return $this->attributes['language'] ?? null;
+    }
+
     protected function resolveMediaUrl(?string $path): ?string
     {
         if (! $path) {

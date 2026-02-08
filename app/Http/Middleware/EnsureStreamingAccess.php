@@ -28,6 +28,14 @@ class EnsureStreamingAccess
         if ($remaining <= 0) {
             $request->session()->put('free_time_expired', true);
 
+            if ($request->expectsJson() || $request->wantsJson()) {
+                return response()->json([
+                    'status' => 'blocked',
+                    'message' => 'Free streaming time used. Please subscribe to continue.',
+                    'redirect_url' => route('account'),
+                ], 403);
+            }
+
             return redirect()
                 ->route('account')
                 ->with('error', 'Free streaming time used. Please subscribe to continue.');

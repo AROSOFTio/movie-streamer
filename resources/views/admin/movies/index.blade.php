@@ -12,6 +12,7 @@
                 <tr>
                     <th class="px-4 py-3">Title</th>
                     <th class="px-4 py-3">Year</th>
+                    <th class="px-4 py-3">Primary Video</th>
                     <th class="px-4 py-3">Featured</th>
                     <th class="px-4 py-3">Actions</th>
                 </tr>
@@ -21,6 +22,9 @@
                     <tr class="border-t border-white/5">
                         <td class="px-4 py-3">{{ $movie->title }}</td>
                         <td class="px-4 py-3">{{ $movie->year }}</td>
+                        <td class="px-4 py-3 text-xs text-slate-400">
+                            {{ data_get($movie->primaryVideo, 'meta.display_name') ?? (basename($movie->primaryVideo?->path ?? '') ?: 'Not uploaded') }}
+                        </td>
                         <td class="px-4 py-3">{{ $movie->featured ? 'Yes' : 'No' }}</td>
                         <td class="px-4 py-3 flex gap-2">
                             <a href="{{ route('admin.movies.edit', $movie) }}" class="text-brand hover:text-brand-dark">Edit</a>

@@ -18,7 +18,10 @@ class MovieAdminController extends Controller
 {
     public function index()
     {
-        $movies = Movie::query()->latest()->paginate(20);
+        $movies = Movie::query()
+            ->with('primaryVideo')
+            ->latest()
+            ->paginate(20);
 
         return view('admin.movies.index', [
             'movies' => $movies,
@@ -51,7 +54,8 @@ class MovieAdminController extends Controller
         $movie->vjs()->sync($data['vjs'] ?? []);
 
         if ($request->hasFile('video')) {
-            $path = $media->storeVideo($request->file('video'));
+            $videoFile = $request->file('video');
+            $path = $media->storeVideo($videoFile, $request->input('video_name'));
             $movie->videoFiles()->update(['is_primary' => false]);
             VideoFile::create([
                 'owner_type' => Movie::class,
@@ -60,7 +64,11 @@ class MovieAdminController extends Controller
                 'path' => $path,
                 'type' => 'mp4',
                 'quality' => $this->normalizeQuality($request->input('video_quality')),
-                'size_bytes' => $request->file('video')->getSize(),
+                'size_bytes' => $videoFile->getSize(),
+                'meta' => [
+                    'display_name' => $request->input('video_name') ?: pathinfo($videoFile->getClientOriginalName(), PATHINFO_FILENAME),
+                    'original_name' => $videoFile->getClientOriginalName(),
+                ],
                 'is_primary' => true,
             ]);
         }
@@ -70,7 +78,7 @@ class MovieAdminController extends Controller
 
     public function edit(Movie $movie)
     {
-        $movie->load('genres', 'castMembers', 'vjs', 'language');
+        $movie->load('genres', 'castMembers', 'vjs', 'language', 'primaryVideo');
 
         return view('admin.movies.edit', [
             'movie' => $movie,
@@ -101,7 +109,8 @@ class MovieAdminController extends Controller
         $movie->vjs()->sync($data['vjs'] ?? []);
 
         if ($request->hasFile('video')) {
-            $path = $media->storeVideo($request->file('video'));
+            $videoFile = $request->file('video');
+            $path = $media->storeVideo($videoFile, $request->input('video_name'));
             $movie->videoFiles()->update(['is_primary' => false]);
             VideoFile::create([
                 'owner_type' => Movie::class,
@@ -110,7 +119,11 @@ class MovieAdminController extends Controller
                 'path' => $path,
                 'type' => 'mp4',
                 'quality' => $this->normalizeQuality($request->input('video_quality')),
-                'size_bytes' => $request->file('video')->getSize(),
+                'size_bytes' => $videoFile->getSize(),
+                'meta' => [
+                    'display_name' => $request->input('video_name') ?: pathinfo($videoFile->getClientOriginalName(), PATHINFO_FILENAME),
+                    'original_name' => $videoFile->getClientOriginalName(),
+                ],
                 'is_primary' => true,
             ]);
         }

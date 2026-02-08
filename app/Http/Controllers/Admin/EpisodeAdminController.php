@@ -19,7 +19,10 @@ class EpisodeAdminController extends Controller
 {
     public function index()
     {
-        $episodes = Episode::query()->with('series')->latest()->paginate(20);
+        $episodes = Episode::query()
+            ->with(['series', 'primaryVideo'])
+            ->latest()
+            ->paginate(20);
 
         return view('admin.episodes.index', [
             'episodes' => $episodes,
@@ -52,7 +55,8 @@ class EpisodeAdminController extends Controller
         $episode->vjs()->sync($data['vjs'] ?? []);
 
         if ($request->hasFile('video')) {
-            $path = $media->storeVideo($request->file('video'));
+            $videoFile = $request->file('video');
+            $path = $media->storeVideo($videoFile, $request->input('video_name'));
             $episode->videoFiles()->update(['is_primary' => false]);
             VideoFile::create([
                 'owner_type' => Episode::class,
@@ -61,7 +65,11 @@ class EpisodeAdminController extends Controller
                 'path' => $path,
                 'type' => 'mp4',
                 'quality' => $this->normalizeQuality($request->input('video_quality')),
-                'size_bytes' => $request->file('video')->getSize(),
+                'size_bytes' => $videoFile->getSize(),
+                'meta' => [
+                    'display_name' => $request->input('video_name') ?: pathinfo($videoFile->getClientOriginalName(), PATHINFO_FILENAME),
+                    'original_name' => $videoFile->getClientOriginalName(),
+                ],
                 'is_primary' => true,
             ]);
         }
@@ -71,7 +79,7 @@ class EpisodeAdminController extends Controller
 
     public function edit(Episode $episode)
     {
-        $episode->load('genres', 'castMembers', 'vjs', 'language');
+        $episode->load('genres', 'castMembers', 'vjs', 'language', 'primaryVideo');
 
         return view('admin.episodes.edit', [
             'episode' => $episode,
@@ -103,7 +111,8 @@ class EpisodeAdminController extends Controller
         $episode->vjs()->sync($data['vjs'] ?? []);
 
         if ($request->hasFile('video')) {
-            $path = $media->storeVideo($request->file('video'));
+            $videoFile = $request->file('video');
+            $path = $media->storeVideo($videoFile, $request->input('video_name'));
             $episode->videoFiles()->update(['is_primary' => false]);
             VideoFile::create([
                 'owner_type' => Episode::class,
@@ -112,7 +121,11 @@ class EpisodeAdminController extends Controller
                 'path' => $path,
                 'type' => 'mp4',
                 'quality' => $this->normalizeQuality($request->input('video_quality')),
-                'size_bytes' => $request->file('video')->getSize(),
+                'size_bytes' => $videoFile->getSize(),
+                'meta' => [
+                    'display_name' => $request->input('video_name') ?: pathinfo($videoFile->getClientOriginalName(), PATHINFO_FILENAME),
+                    'original_name' => $videoFile->getClientOriginalName(),
+                ],
                 'is_primary' => true,
             ]);
         }

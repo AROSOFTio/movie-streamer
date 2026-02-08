@@ -47,6 +47,8 @@
                 data-watchable-id="{{ $watchable->id }}"
                 data-stream-sources='@json($streamSources)'
                 data-stream-default="{{ $defaultStreamSource['id'] ?? '' }}"
+                data-remaining-seconds="{{ $remainingSeconds ?? '' }}"
+                data-account-url="{{ route('account') }}"
             >
                 <source src="{{ $defaultStreamSource['url'] ?? route('stream', $streamToken) }}" type="video/mp4">
                 Your browser does not support the video tag.
@@ -62,13 +64,13 @@
             </div>
             <div class="glass-panel rounded-2xl p-4">
                 <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Free Time Left</p>
-                <p class="mt-2 text-2xl">
-                    {{ $remainingSeconds !== null ? ceil($remainingSeconds / 60) : 'Unlimited' }} min
+                <p class="mt-2 text-2xl" data-free-time-left>
+                    {{ $remainingSeconds !== null ? ceil($remainingSeconds / 60).' min' : 'Unlimited' }}
                 </p>
             </div>
             <div class="glass-panel rounded-2xl p-4">
                 <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Language</p>
-                <p class="mt-2 text-2xl">{{ $watchable->language ?? 'English' }}</p>
+                <p class="mt-2 text-2xl">{{ $watchable->language_label ?? 'English' }}</p>
             </div>
             <div class="glass-panel rounded-2xl p-4">
                 <p class="text-xs uppercase tracking-[0.3em] text-slate-500">Rating</p>

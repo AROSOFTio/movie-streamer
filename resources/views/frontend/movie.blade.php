@@ -28,10 +28,10 @@
             </div>
 
             <div class="flex flex-wrap gap-4 text-sm text-slate-300">
-                @if ($movie->language?->name || $movie->language)
+                @if ($movie->language_label)
                     <div class="flex items-center gap-2">
                         <span class="text-xs uppercase tracking-[0.3em] text-slate-500">Language</span>
-                        <span>{{ $movie->language?->name ?? $movie->language }}</span>
+                        <span>{{ $movie->language_label }}</span>
                     </div>
                 @endif
                 @if ($movie->vjs->count())
@@ -55,7 +55,7 @@
         <aside class="space-y-6">
             <div class="glass-panel rounded-2xl p-6">
                 <h2 class="text-2xl">Watch Options</h2>
-                <p class="mt-2 text-sm text-slate-400">Enjoy free streaming up to 1 hour per day. Subscribe for unlimited access.</p>
+                <p class="mt-2 text-sm text-slate-400">Enjoy free streaming up to 1 hour per day, even without an account. Subscribe for unlimited access.</p>
                 <div class="mt-4 flex flex-col gap-3">
                     <a href="{{ route('watch.movie', $movie->slug) }}" class="rounded-xl bg-brand px-4 py-3 text-center text-sm font-semibold text-black hover:bg-brand-dark">
                         Watch Now

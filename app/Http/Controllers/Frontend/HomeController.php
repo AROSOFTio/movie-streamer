@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
-use App\Models\Episode;
-use App\Models\Genre;
 use App\Models\Language;
 use App\Models\Movie;
-use App\Models\Series;
 use App\Models\WatchHistory;
+use App\Services\Streaming\StreamTokenService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
@@ -16,36 +15,55 @@ class HomeController extends Controller
     public function index()
     {
         $featured = Movie::query()
-            ->with('genres')
+            ->with(['genres', 'primaryVideo', 'language'])
             ->where('featured', true)
             ->latest()
             ->first();
 
         $trending = Movie::query()
-            ->with('genres')
+            ->with(['primaryVideo', 'language'])
             ->latest()
             ->take(12)
             ->get();
 
-        $genres = Genre::query()
-            ->with(['movies' => function ($query) {
-                $query->latest()->take(12);
-            }])
-            ->get();
+        $mostStreamed = Movie::query()
+            ->with(['primaryVideo', 'language'])
+            ->withCount('watchHistories as stream_count')
+            ->orderByDesc('stream_count')
+            ->latest()
+            ->take(12)
+            ->get()
+            ->filter(fn (Movie $movie) => (int) ($movie->stream_count ?? 0) > 0)
+            ->values();
 
-        $series = Series::query()->latest()->take(10)->get();
-        $episodes = Episode::query()->latest()->take(10)->get();
+        if ($mostStreamed->isEmpty()) {
+            $mostStreamed = $trending->take(10)->values();
+        }
 
-        $languageTrending = Language::query()
+        $mostDownloaded = Movie::query()
+            ->with(['primaryVideo', 'language'])
+            ->withSum('downloadRequests as download_count_total', 'download_count')
+            ->orderByDesc('download_count_total')
+            ->latest()
+            ->take(12)
+            ->get()
+            ->filter(fn (Movie $movie) => (int) ($movie->download_count_total ?? 0) > 0)
+            ->values();
+
+        if ($mostDownloaded->isEmpty()) {
+            $mostDownloaded = $trending->take(10)->values();
+        }
+
+        $languageRows = Language::query()
             ->where('is_active', true)
             ->with(['movies' => function ($query) {
-                $query->latest()->take(10);
+                $query->with(['primaryVideo', 'language'])->latest()->take(10);
             }])
+            ->orderByRaw("case when lower(name) = 'ateso' then 0 when lower(name) = 'luganda' then 1 else 2 end")
             ->orderBy('name')
             ->get()
-            ->filter(function ($language) {
-                return $language->movies->count() > 0;
-            });
+            ->filter(fn (Language $language) => $language->movies->isNotEmpty())
+            ->values();
 
         $continueWatching = collect();
         if (Auth::check()) {
@@ -60,11 +78,31 @@ class HomeController extends Controller
         return view('frontend.home', [
             'featured' => $featured,
             'trending' => $trending,
-            'genres' => $genres,
+            'mostStreamed' => $mostStreamed,
+            'mostDownloaded' => $mostDownloaded,
+            'languageRows' => $languageRows,
             'continueWatching' => $continueWatching,
-            'series' => $series,
-            'episodes' => $episodes,
-            'languageTrending' => $languageTrending,
+        ]);
+    }
+
+    public function preview(Request $request, Movie $movie, StreamTokenService $streamTokenService)
+    {
+        $movie->loadMissing('primaryVideo');
+
+        if (! $movie->primaryVideo) {
+            return response()->json([
+                'message' => 'Preview is not available for this title.',
+            ], 404);
+        }
+
+        $streamToken = $streamTokenService->create(
+            $request->user(),
+            $movie->primaryVideo,
+            $request->session()->getId()
+        );
+
+        return response()->json([
+            'url' => route('stream', $streamToken->token),
         ]);
     }
 }

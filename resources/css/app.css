@@ -19,6 +19,11 @@
         font-family: 'Bebas Neue', sans-serif;
         letter-spacing: 0.04em;
     }
+
+    select option {
+        background-color: #0f172a;
+        color: #e5e7eb;
+    }
 }
 
 @layer components {
@@ -27,5 +32,37 @@
     }
     .glass-panel {
         @apply bg-white/5 border border-white/10 backdrop-blur;
+    }
+
+    .form-control {
+        @apply w-full rounded-xl border border-emerald-500/35 bg-slate-900/80 px-4 py-2 text-sm text-slate-100 placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/30;
+    }
+
+    .form-checkbox {
+        @apply rounded border-emerald-500/40 bg-slate-900 text-brand focus:ring-brand/40;
+    }
+
+    .filter-chip {
+        @apply block rounded-lg border border-transparent px-3 py-2 text-slate-200 transition hover:border-brand/50 hover:bg-brand/10 hover:text-brand;
+    }
+
+    .preview-media {
+        @apply relative overflow-hidden;
+    }
+
+    .preview-image {
+        @apply h-full w-full object-cover transition-opacity duration-300;
+    }
+
+    .preview-video {
+        @apply absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300;
+    }
+
+    .preview-card.is-previewing .preview-image {
+        @apply opacity-0;
+    }
+
+    .preview-card.is-previewing .preview-video {
+        @apply opacity-100;
     }
 }

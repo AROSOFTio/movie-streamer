@@ -30,6 +30,7 @@ class MovieUpdateRequest extends FormRequest
             'poster' => ['nullable', 'image', 'max:5120'],
             'backdrop' => ['nullable', 'image', 'max:8192'],
             'video' => ['nullable', 'file', 'mimetypes:video/mp4', 'max:512000'],
+            'video_name' => ['nullable', 'string', 'max:255'],
             'video_quality' => ['nullable', 'string', 'in:360p,480p,720p,1080p,1440p,2160p,4k'],
             'genres' => ['nullable', 'array'],
             'genres.*' => ['integer', 'exists:genres,id'],

@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/browse', [BrowseController::class, 'index'])->name('browse');
 Route::get('/movies/{slug}', [MovieController::class, 'show'])->name('movies.show');
+Route::get('/movies/{movie:slug}/preview', [HomeController::class, 'preview'])
+    ->name('movies.preview')
+    ->middleware('throttle:60,1');
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:auth');

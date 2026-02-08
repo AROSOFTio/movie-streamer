@@ -11,11 +11,11 @@
                     name="search"
                     value="{{ request('search') }}"
                     placeholder="Search movies..."
-                    class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm"
+                    class="form-control"
                 />
                 <div>
                     <label class="text-xs uppercase tracking-[0.3em] text-slate-500">Genres</label>
-                    <select name="genre" class="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm">
+                    <select name="genre" class="form-control mt-2">
                         <option value="">All Genres</option>
                         @foreach ($genres as $genre)
                             <option value="{{ $genre->slug }}" @selected(request('genre') === $genre->slug)>{{ $genre->name }}</option>
@@ -24,7 +24,7 @@
                 </div>
                 <div>
                     <label class="text-xs uppercase tracking-[0.3em] text-slate-500">Languages</label>
-                    <select name="language" class="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm">
+                    <select name="language" class="form-control mt-2">
                         <option value="">All Languages</option>
                         @foreach ($languages as $language)
                             <option value="{{ $language->slug }}" @selected(request('language') === $language->slug)>{{ $language->name }}</option>
@@ -33,7 +33,7 @@
                 </div>
                 <div>
                     <label class="text-xs uppercase tracking-[0.3em] text-slate-500">VJs / Translators</label>
-                    <select name="vj" class="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm">
+                    <select name="vj" class="form-control mt-2">
                         <option value="">All VJs</option>
                         @foreach ($vjs as $vj)
                             <option value="{{ $vj->slug }}" @selected(request('vj') === $vj->slug)>{{ $vj->name }}</option>
@@ -41,7 +41,7 @@
                     </select>
                 </div>
                 <label class="flex items-center gap-2 text-sm text-slate-300">
-                    <input type="checkbox" name="featured" value="1" @checked(request('featured')) class="rounded border-white/20 bg-white/5">
+                    <input type="checkbox" name="featured" value="1" @checked(request('featured')) class="form-checkbox">
                     Featured only
                 </label>
                 <button class="w-full rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-black hover:bg-brand-dark">Apply Filters</button>
@@ -49,9 +49,9 @@
 
             <div class="mt-8 space-y-2 text-sm">
                 <div class="text-xs uppercase tracking-[0.3em] text-slate-500">Quick Access</div>
-                <a href="#movies" class="block rounded-lg px-3 py-2 hover:bg-white/5">Movies</a>
-                <a href="#series" class="block rounded-lg px-3 py-2 hover:bg-white/5">Series</a>
-                <a href="#sop" class="block rounded-lg px-3 py-2 hover:bg-white/5">SOP</a>
+                <a href="#movies" class="filter-chip">Movies</a>
+                <a href="#series" class="filter-chip">Series</a>
+                <a href="#sop" class="filter-chip">SOP</a>
             </div>
         </aside>
 

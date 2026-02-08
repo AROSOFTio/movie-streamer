@@ -57,9 +57,28 @@
         </div>
 
         <div class="grid gap-4 md:grid-cols-3">
-            <input type="file" name="poster" class="rounded-xl border border-white/10 bg-white/5 p-2">
-            <input type="file" name="backdrop" class="rounded-xl border border-white/10 bg-white/5 p-2">
-            <input type="file" name="video" class="rounded-xl border border-white/10 bg-white/5 p-2">
+            <div>
+                <label class="text-xs uppercase tracking-[0.3em] text-slate-500">Thumbnail / Poster</label>
+                <input type="file" name="poster" accept="image/*" class="mt-2 w-full rounded-xl border border-white/10 bg-white/5 p-2">
+            </div>
+            <div>
+                <label class="text-xs uppercase tracking-[0.3em] text-slate-500">Backdrop</label>
+                <input type="file" name="backdrop" accept="image/*" class="mt-2 w-full rounded-xl border border-white/10 bg-white/5 p-2">
+            </div>
+            <div>
+                <label class="text-xs uppercase tracking-[0.3em] text-slate-500">Video File</label>
+                <input type="file" name="video" accept="video/mp4" class="mt-2 w-full rounded-xl border border-white/10 bg-white/5 p-2">
+            </div>
+        </div>
+        <div>
+            <label class="text-xs uppercase tracking-[0.3em] text-slate-500">Video File Name</label>
+            <input
+                type="text"
+                name="video_name"
+                value="{{ old('video_name', data_get($episode->primaryVideo, 'meta.display_name', '')) }}"
+                placeholder="Optional display name for the uploaded file"
+                class="mt-2 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2"
+            >
         </div>
         <div>
             <label class="text-xs uppercase tracking-[0.3em] text-slate-500">Video Quality</label>

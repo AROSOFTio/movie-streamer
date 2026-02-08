@@ -67,6 +67,11 @@ class Movie extends Model
         return $this->morphMany(WatchHistory::class, 'watchable');
     }
 
+    public function downloadRequests()
+    {
+        return $this->morphMany(DownloadRequest::class, 'downloadable');
+    }
+
     public function getPosterUrlAttribute(): ?string
     {
         return $this->resolveMediaUrl($this->poster_path);
@@ -75,6 +80,16 @@ class Movie extends Model
     public function getBackdropUrlAttribute(): ?string
     {
         return $this->resolveMediaUrl($this->backdrop_path);
+    }
+
+    public function getLanguageLabelAttribute(): ?string
+    {
+        $relatedLanguage = $this->relationLoaded('language') ? $this->getRelation('language') : null;
+        if ($relatedLanguage instanceof Language) {
+            return $relatedLanguage->name;
+        }
+
+        return $this->attributes['language'] ?? null;
     }
 
     protected function resolveMediaUrl(?string $path): ?string

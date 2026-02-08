@@ -25,13 +25,22 @@ class MediaService
         return $file->store('backdrops', 'public');
     }
 
-    public function storeVideo(?UploadedFile $file): ?string
+    public function storeVideo(?UploadedFile $file, ?string $preferredName = null): ?string
     {
         if (! $file) {
             return null;
         }
 
-        $filename = Str::uuid().'.'.$file->getClientOriginalExtension();
+        $base = $preferredName
+            ? Str::slug(pathinfo($preferredName, PATHINFO_FILENAME), '_')
+            : (string) Str::uuid();
+
+        if ($base === '') {
+            $base = (string) Str::uuid();
+        }
+
+        $extension = strtolower($file->getClientOriginalExtension() ?: 'mp4');
+        $filename = $base.'-'.Str::random(8).'.'.$extension;
 
         return $file->storeAs('uploads', $filename, 'local');
     }

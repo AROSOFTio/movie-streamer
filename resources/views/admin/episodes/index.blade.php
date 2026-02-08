@@ -14,6 +14,7 @@
                     <th class="px-4 py-3">Series</th>
                     <th class="px-4 py-3">Season</th>
                     <th class="px-4 py-3">Episode</th>
+                    <th class="px-4 py-3">Primary Video</th>
                     <th class="px-4 py-3">Actions</th>
                 </tr>
             </thead>
@@ -24,6 +25,9 @@
                         <td class="px-4 py-3">{{ $episode->series?->title }}</td>
                         <td class="px-4 py-3">{{ $episode->season_number }}</td>
                         <td class="px-4 py-3">{{ $episode->episode_number }}</td>
+                        <td class="px-4 py-3 text-xs text-slate-400">
+                            {{ data_get($episode->primaryVideo, 'meta.display_name') ?? (basename($episode->primaryVideo?->path ?? '') ?: 'Not uploaded') }}
+                        </td>
                         <td class="px-4 py-3 flex gap-2">
                             <a href="{{ route('admin.episodes.edit', $episode) }}" class="text-brand hover:text-brand-dark">Edit</a>
                             <form method="POST" action="{{ route('admin.episodes.destroy', $episode) }}">

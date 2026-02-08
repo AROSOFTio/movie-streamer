@@ -60,7 +60,6 @@ class DatabaseSeeder extends Seeder
         $languages = collect([
             'Luganda',
             'Ateso',
-            'English',
         ])->map(function ($name) {
             return Language::updateOrCreate(
                 ['slug' => Str::slug($name)],
@@ -75,7 +74,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'VJ Junior', 'language' => 'luganda'],
             ['name' => 'VJ Oweko', 'language' => 'ateso'],
             ['name' => 'VJ Alex', 'language' => 'ateso'],
-            ['name' => 'VJ Max', 'language' => 'english'],
+            ['name' => 'VJ Max', 'language' => 'luganda'],
         ];
 
         $vjs = collect($vjData)->map(function ($data) use ($languageMap) {
@@ -138,11 +137,11 @@ class DatabaseSeeder extends Seeder
                 'title' => 'Emerald Rift',
                 'slug' => 'emerald-rift',
                 'description' => 'An elite squad is pulled into a dimension where time fractures.',
-                'language_slug' => 'english',
+                'language_slug' => 'luganda',
                 'year' => 2022,
                 'rating' => 8.1,
                 'duration' => 118,
-                'language' => 'English',
+                'language' => 'Luganda',
                 'country' => 'UK',
                 'age_rating' => 'PG-13',
                 'featured' => false,
