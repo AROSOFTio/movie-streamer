@@ -1,3 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        color-scheme: dark;
+    }
+
+    body {
+        font-family: 'Manrope', sans-serif;
+        background-color: #050505;
+        color: #e5e7eb;
+    }
+
+    h1, h2, h3, h4, h5 {
+        font-family: 'Bebas Neue', sans-serif;
+        letter-spacing: 0.04em;
+    }
+}
+
+@layer components {
+    .card-hover {
+        @apply transition-transform duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02];
+    }
+    .glass-panel {
+        @apply bg-white/5 border border-white/10 backdrop-blur;
+    }
+}

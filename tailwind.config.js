@@ -12,7 +12,19 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Manrope', ...defaultTheme.fontFamily.sans],
+                display: ['Bebas Neue', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                brand: {
+                    DEFAULT: '#00E676',
+                    dark: '#00C853',
+                    glow: '#00FF8A',
+                },
+                surface: {
+                    DEFAULT: '#0c0c0f',
+                    soft: '#141418',
+                },
             },
         },
     },
